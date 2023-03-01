@@ -25,7 +25,7 @@
         <div class="column">done: {{ todo.done }}</div>
         <div class="column is-5 has-text-right">
       <button class="button is-lite">&check;</button>
-    <button class="button is-danger ml-2">&cross;</button>
+    <button class="button is-danger ml-2" @click="deleteToDo(todo.id)">&cross;</button>
     </div>
   </div>
   </div>
@@ -41,16 +41,16 @@ import { v4 as uuidv4 } from 'uuid'
 
 // todo
 const todos = ref([
-  // {  
-  // id: '1',
-  // content: 'hello gays',
-  // done: false
-  // },
-  // {  
-  // id: '2',
-  // content: 'check this',
-  // done: false
-  // },
+  {  
+  id: '1',
+  content: 'hello gays',
+  done: false
+  },
+  {  
+  id: '2',
+  content: 'check this',
+  done: false
+  },
 ]);
 
 // add todo 
@@ -64,6 +64,11 @@ const addToDo = () => {
   };
   todos.value.unshift(newToDo);
   newTodoContent.value = "";
+}
+
+// delete todo
+const deleteToDo = (id) => {
+  todos.value = todos.value.filter(todo => todo.id != id);
 }
 </script>
 
