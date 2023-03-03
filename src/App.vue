@@ -22,8 +22,8 @@
     <div class="content">
       <div class="columns is-mobile is-vcentered">
         <div class="column" :class="{'has-text-success line-through': todo.done}">{{ todo.content }}</div>
-        <div class="column">done: {{ todo.done }}</div>
-        <div class="column is-5 has-text-right">
+        <div class="column">date: {{ todo.date }}</div>
+        <div class="column is-5 has-text-right wc">
       <button class="button is-lite" :class="todo.done ? 'is-success' : 'is-light'" @click="toggleDone(todo.id)">&check;</button>
     <button class="button is-danger ml-2" @click="deleteToDo(todo.id)">&cross;</button>
     </div>
@@ -38,23 +38,26 @@
 // import
 import { ref, onMounted } from 'vue'
 import { db } from '@/firebase'
-import { collection, onSnapshot, addDoc, doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, doc, deleteDoc, updateDoc, query, orderBy } from "firebase/firestore";
 
 // fb ref
 const todosCollectionsRef = collection(db, "todos")
-
+const todosCollectionsQuery = query(todosCollectionsRef, orderBy("date", "desc"));
 
 // todo
 const todos = ref([]);
 
 // get todo 
 onMounted( () => {
-onSnapshot(todosCollectionsRef, (querySnapshot) => {
+onSnapshot(todosCollectionsQuery, (querySnapshot) => {
   const fbTodos = [];
+  
   querySnapshot.forEach((doc) => {
+    let date = new Date(doc.data().date)
       const todo = {
     id: doc.id,
     content: doc.data().content,
+    date: date.toDateString(),
     done: doc.data().done
   };
   fbTodos.push(todo)
@@ -70,6 +73,7 @@ const addToDo = () => {
   addDoc(todosCollectionsRef, {
   content: newTodoContent.value,
   done: false,
+  date: Date.now()
 });
   newTodoContent.value = "";
 }
@@ -102,5 +106,8 @@ const toggleDone = (id) => {
 }
 .line-through{
   text-decoration: line-through;
+}
+.wc{
+  max-width: 130px;
 }
 </style>
